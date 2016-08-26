@@ -7,6 +7,7 @@ var open = require('gulp-open');
 var protractor = require('gulp-protractor');
 var exec = require('child_process').exec;
 var runSequence = require('run-sequence');
+var sass = require('gulp-sass')
 
 gulp.task('test', ['seed'], function(callback) {
   runSequence('server:start', 'protractor', 'server:stop', callback);
@@ -34,11 +35,9 @@ gulp.task('protractor', function(callback){
   });
 });
 
-gulp.task('less', function () {
-  gulp.src('./app/styles/main.less')
-  .pipe(less({
-    paths: ['app/styles']
-  }))
+gulp.task('sass', function () {
+  gulp.src('./app/styles/main.scss')
+  .pipe(sass())
   .pipe(min({
     cssmin: true
   }))
@@ -61,9 +60,7 @@ gulp.task('open', function(){
 
 gulp.task('default', ['server:start', 'open'], function() {
   livereload.listen();
-  gulp.watch('app/styles/*.less', ['less']).on('change', livereload.changed);
+  gulp.watch('app/styles/*.scss', ['sass']).on('change', livereload.changed);
   gulp.watch('app/**/*.js', ['jshint']).on('change', livereload.changed);
   gulp.watch('app/**/*.html').on('change', livereload.changed);
 });
-
-

@@ -14,6 +14,6 @@ angular.module('app.routes', ['ui.router'])
   .state('main.home', {
     url: '/',
     templateUrl: 'modules/main/index.html',
-    controller: 'MainCtrl'
+    controller: 'ImageFormController'
   });
 });
