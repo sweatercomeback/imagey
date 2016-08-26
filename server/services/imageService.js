@@ -6,7 +6,7 @@ let fs = require('fs'),
 
 let {getFileName, getMimeType} = require('./common');
 
-let url = 'https://a.shipb.us/imageytest';
+let url = '';
 
 function isLocalImage(src){
   return src.includes(url.replace('https://', '').replace('http://', ''));
@@ -16,8 +16,10 @@ function processImageSrc(src) {
   if(src.startsWith('http') || src.startsWith('//')) {
     return src;
   }
-
-  return `${url}/${src}`;
+  if(!url.endsWith('/') && !src.startsWith('/')) {
+    url = `${url}/`;
+  }
+  return `${url}${src}`;
 }
 
 function process(img) {
@@ -37,8 +39,8 @@ function weight(imgs) {
   return imgs;
 }
 
-function getImagesFromUrl(url) {
-
+function getImagesFromUrl(pullFrom) {
+  url = pullFrom;
   var options = {
       uri: url,
       transform: function (body) {

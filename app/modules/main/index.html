@@ -11,6 +11,6 @@
 
 <ul>
   <li data-ng-repeat="img in images">
-    <img src="{{img.src}}" style="max-height: 100px;" />
+    <img src="{{img.src}}" style="max-height: 100px;" onerror="this.src='/images/dead-img.png';" />
   </li>
 </ul>
