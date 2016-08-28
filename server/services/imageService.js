@@ -2,6 +2,7 @@ let fs = require('fs'),
     request = require('request'),
     rp = require('request-promise'),
     cheerio = require("cheerio"),
+    getImageUrls = require('get-image-urls'),
     _ = require('lodash');
 
 let {getFileName, getMimeType} = require('./common');
@@ -35,35 +36,62 @@ function process(img) {
   }
 }
 
+function processImagesFromUrl(img) {
+  let src = img.url,
+      alt = '',
+      isLocal = null,
+      weight = 0;
+
+  return {
+    src: src,
+    alt: alt,
+    weight: weight
+  }
+}
+
 function weight(imgs) {
   return imgs;
 }
 
 function getImagesFromUrl(pullFrom) {
   url = pullFrom;
-  var options = {
+  let options = {
       uri: url,
       transform: function (body) {
           return cheerio.load(body);
       }
   };
 
-  return rp(options)
-      .then(function ($) {
-          let $imgs = $("img"),
-          imageCount = $imgs.length;
+  // let cherioPromise = rp(options)
+  //     .then(function ($) {
+  //         let $imgs = $("img"),
+  //         imageCount = $imgs.length;
+  //
+  //         console.log(`There are ${imageCount} images`);
+  //         var imgList = _.map($imgs, (img)=>{
+  //           return process(img);
+  //         });
+  //         return _.map(imgList, (img)=>{
+  //           return weight(img);
+  //         });
+  //     })
+  //     .catch(function (err) {
+  //         console.log("We’ve encountered an error: " + err);
+  //   });
 
-          console.log(`There are ${imageCount} images`);
-          var imgList = _.map($imgs, (img)=>{
-            return process(img);
-          });
-          return _.map(imgList, (img)=>{
-            return weight(img);
-          });
+    return getImageUrls(url)
+      .then((images) => {
+        return _.chain(images)
+          .map(processImagesFromUrl)
+          .uniq(function(item, key, src) {
+              return item.src;
+          })
+          .value();
+
       })
-      .catch(function (err) {
-          console.log("We’ve encountered an error: " + err);
-    });
+      .catch((e) => {
+        console.log('ERROR', e);
+      });
 }
 
 module.exports = {
