@@ -9,8 +9,8 @@ var exec = require('child_process').exec;
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass')
 
-gulp.task('test', ['seed'], function(callback) {
-  runSequence('server:start', 'protractor', 'server:stop', callback);
+gulp.task('test', [], function(callback) {
+  
 });
 
 gulp.task('server:start', function (callback) {

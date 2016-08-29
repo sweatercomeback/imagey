@@ -1,6 +1,6 @@
 'use strict';
 angular.module('app.main', [])
-.controller('ImageFormController', function ($scope, $http) {
+.controller('ImageFormController', function ($scope, $http, $compile) {
     $scope.url = '';
     $scope.images = [];
     $scope.loading = false;
@@ -16,13 +16,18 @@ angular.module('app.main', [])
         return "http://"+url;
     }
 
+    $scope.addCarousel = function () {
+      var el = $compile( "<carousel links='images'></carousel>" )( $scope );
+      $(".carousel-container").append( el );
+    };
+
     $scope.pullImages = function(event) {
+      $(".carousel-container").html('');
       $scope.loading = true;
       $scope.noResults = false;
       $scope.images = [];
-      
+
       $scope.url = sanitizeUrl($scope.url);
-      console.log($scope.url);
       $http({
         method: 'POST',
         url: '/images',
@@ -30,6 +35,7 @@ angular.module('app.main', [])
       }).then(function(res) {
           $scope.images = res.data;
           $scope.noResults = res.data.length === 0;
+          $scope.addCarousel();
         }).finally(function(){
           $scope.loading = false;
         });

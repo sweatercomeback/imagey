@@ -15,7 +15,7 @@ function isLocalImage(src){
 }
 
 function isTrackingPixel(img) {
-    return (img.dimensions.height === 1 && img.dimensions.length === 1);
+    return !(img.dimensions.height === 1);
 }
 
 function processImageSrc(src) {
@@ -54,8 +54,21 @@ function processImagesFromUrl(img) {
   }
 }
 
-function weight(imgs) {
-  return imgs;
+function weight(img, index) {
+  //add weight if first
+  if(index === 0) {
+    img.weight += 1;
+  }
+
+  if(img.src.includes('logo')) {
+    img.weight += 5;
+  }
+
+  return img;
+}
+
+function sortImagesByWeight(img) {
+  return img.weight;
 }
 
 function getImagesFromUrl(pullFrom) {
@@ -66,51 +79,68 @@ function getImagesFromUrl(pullFrom) {
           return cheerio.load(body);
       }
   };
+  var allImages = [];
 
-  // let cherioPromise = rp(options)
-  //     .then(function ($) {
-  //         let $imgs = $("img"),
-  //         imageCount = $imgs.length;
-  //
-  //         console.log(`There are ${imageCount} images`);
-  //         var imgList = _.map($imgs, (img)=>{
-  //           return process(img);
-  //         });
-  //         return _.map(imgList, (img)=>{
-  //           return weight(img);
-  //         });
-  //     })
-  //     .catch(function (err) {
-  //         console.log("We’ve encountered an error: " + err);
-  //   });
+  let cherioPromise = rp(options)
+      .then(function ($) {
+          let $imgs = $("img"),
+          imageCount = $imgs.length;
 
-    return getImageUrls(url)
+          console.log(`There are ${imageCount} images`);
+          var imgList = _.map($imgs, (img)=>{
+            return process(img);
+          });
+          allImages = _.union(allImages, imgList);
+          return imgList;
+      })
+      .catch(function (err) {
+          console.log("We’ve encountered an error: " + err);
+    });
+
+
+    let getImageUrlsPromise = getImageUrls(url)
       .then((images) => {
+        console.log("and "+images.length)
         let list = _.chain(images)
           .map(processImagesFromUrl)
-          .uniq(function(item, key, src) {
-              return item.src;
-          })
           .value();
-
-        let infoPromises = _.map(list, function(item) {
-            return getDimensions(item.src).then((dim)=>{
-              item.dimensions = dim;
-            });
-        });
-
-        return Promise.all(infoPromises).then(()=>{
-            return _.reject(list, isTrackingPixel);
-        });
+          allImages = _.union(allImages, list);
+          return list;
 
       })
       .catch((e) => {
         console.log('ERROR', e);
       });
+
+
+
+
+    return Promise.all([getImageUrlsPromise, cherioPromise]).then(()=>{
+        let un = _.uniq(allImages, function(item, key, src) {
+            return item.src;
+        });
+        var infoPromise = _.map(un, function(item) {
+            return getDimensions(item.src).then((dim)=>{
+              item.dimensions = dim;
+
+            });
+          });
+
+          return Promise.all(infoPromise).then(function() {
+            return _.chain(un)
+                     .filter(isTrackingPixel)
+                     .map(weight)
+                     .sortBy(sortImagesByWeight)
+                     .reverse()
+                     .value();
+          });
+
+        });
+
 }
 
-// getImagesFromUrl("http://dayoftheshirt.com").then((data)=>{
-//   console.log(data);
+// getImagesFromUrl("https://a.shipb.us/imageytest").then((data)=>{
+//   console.log("returning", data);
 // })
 
 module.exports = {
