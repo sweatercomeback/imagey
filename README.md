@@ -1,7 +1,7 @@
-Angular-Hapi-Gulp-Bootstrap
+Imagey
 =======
 
-Starter project with Angular, Hapi, Gulp, Bootstrap and Protractor with Cucumber already configured and ready to be used. It's also using MongoDB.
+Image ripping test project with Angular, Hapi, Gulp, Bootstrap, based on https://github.com/mavdi/angular-hapi-gulp-bootstrap
 
 
 ```
@@ -14,12 +14,10 @@ then
 bower install
 ```
 
-then simply 
+then simply
 
 ```
 gulp
 ```
 
 to have the app launched.
-
-
