@@ -9,8 +9,12 @@
   </div>
 </form>
 
-<ul>
+<div ng-show="loading">Loading</div>
+
+<ul class="image-list">
   <li data-ng-repeat="img in images">
     <img src="{{img.src}}" style="max-height: 100px;" onerror="this.src='/images/dead-img.png';" />
   </li>
 </ul>
+
+<div ng-show="noResults">No images found</div>

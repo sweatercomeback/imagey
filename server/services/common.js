@@ -1,6 +1,12 @@
 var fs = require('fs'),
     request = require('request'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    http = require('http'),
+    url = require('url'),
+    probe = require('probe-image-size');
+
+
+
 
 function download(uri, filename, callback){
   request.head(uri, function(err, res, body){
@@ -32,8 +38,13 @@ function getMimeType(str) {
   }
 }
 
+function getDimensions(imgUrl) {
+  return probe(imgUrl);
+}
+
 module.exports = {
   download: download,
   getFileName: getFileName,
-  getMimeType: getMimeType
+  getMimeType: getMimeType,
+  getDimensions: getDimensions
 }
