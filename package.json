@@ -20,10 +20,12 @@
   },
   "homepage": "https://github.com/mavdi/angular-hapi-gulp-bootstrap",
   "dependencies": {
+    "chai": "^3.5.0",
     "cheerio": "^0.22.0",
     "get-image-urls": "^1.0.4",
     "hapi": "^8.0.0",
     "image-size": "^0.5.0",
+    "mocha": "^3.0.2",
     "mongoose": "^3.8.21",
     "probe-image-size": "^2.1.1",
     "request-promise": "^4.1.1",

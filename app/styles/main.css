@@ -2222,7 +2222,7 @@ body {
     position: absolute;
     top: auto; }
   .carousel-container .item {
-    margin-top: 15%;
+    margin-top: 50px;
     height: 200px; }
     .carousel-container .item img {
       max-height: 150px;

@@ -4,34 +4,18 @@ let fs = require('fs'),
     cheerio = require("cheerio"),
     getImageUrls = require('get-image-urls'),
     _ = require('lodash'),
-    {getDimensions} = require('./common');
+    {getDimensions} = require('./common'),
+    {isTrackingPixel, isLocalImage, processImageSrc} = require('./imageInspector'),
+    {weight} = require('./imageWeight');
 
 let {getFileName, getMimeType} = require('./common');
 
 let url = '';
 
-function isLocalImage(src){
-  return src.includes(url.replace('https://', '').replace('http://', ''));
-}
-
-function isTrackingPixel(img) {
-    return !(img.dimensions.height === 1);
-}
-
-function processImageSrc(src) {
-  if(src.startsWith('http') || src.startsWith('//')) {
-    return src;
-  }
-  if(!url.endsWith('/') && !src.startsWith('/')) {
-    url = `${url}/`;
-  }
-  return `${url}${src}`;
-}
-
 function process(img) {
-  let src = processImageSrc(img.attribs['src']),
+  let src = processImageSrc(img.attribs['src'], url),
       alt = img.attribs['alt'],
-      isLocal = isLocalImage(src),
+      isLocal = isLocalImage(src, url),
       weight = 0;
 
   return {
@@ -54,18 +38,6 @@ function processImagesFromUrl(img) {
   }
 }
 
-function weight(img, index) {
-  //add weight if first
-  if(index === 0) {
-    img.weight += 1;
-  }
-
-  if(img.src.includes('logo')) {
-    img.weight += 5;
-  }
-
-  return img;
-}
 
 function sortImagesByWeight(img) {
   return img.weight;
@@ -128,7 +100,7 @@ function getImagesFromUrl(pullFrom) {
 
           return Promise.all(infoPromise).then(function() {
             return _.chain(un)
-                     .filter(isTrackingPixel)
+                     .reject(isTrackingPixel)
                      .map(weight)
                      .sortBy(sortImagesByWeight)
                      .reverse()

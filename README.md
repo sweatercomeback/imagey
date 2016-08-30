@@ -21,3 +21,10 @@ gulp
 ```
 
 to have the app launched.
+
+
+```
+mocha
+```
+
+to test
