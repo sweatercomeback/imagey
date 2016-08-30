@@ -3,14 +3,25 @@
 
   .carousel-inner {
     height: 350px;
+    background: #ddd;
   }
 
   .carousel-indicators {
     bottom: -35px;
   }
 
+  .carousel-caption {
+    right: 110px;
+    padding-bottom: 0;
+    bottom: 0;
+    position: absolute;
+    top: auto;
+
+  }
+
   .item {
     margin-top: 15%;
+    height: 200px;
     img {
       max-height: 150px;
       text-align:center;

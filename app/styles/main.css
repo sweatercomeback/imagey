@@ -2211,11 +2211,19 @@ body {
 .carousel-container {
   margin-top: 2em; }
   .carousel-container .carousel-inner {
-    height: 350px; }
+    height: 350px;
+    background: #ddd; }
   .carousel-container .carousel-indicators {
     bottom: -35px; }
+  .carousel-container .carousel-caption {
+    right: 110px;
+    padding-bottom: 0;
+    bottom: 0;
+    position: absolute;
+    top: auto; }
   .carousel-container .item {
-    margin-top: 15%; }
+    margin-top: 15%;
+    height: 200px; }
     .carousel-container .item img {
       max-height: 150px;
       text-align: center;
