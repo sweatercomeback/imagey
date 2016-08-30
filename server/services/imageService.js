@@ -81,21 +81,21 @@ function getImagesFromUrl(pullFrom) {
   };
   var allImages = [];
 
-  let cherioPromise = rp(options)
-      .then(function ($) {
-          let $imgs = $("img"),
-          imageCount = $imgs.length;
-
-          console.log(`There are ${imageCount} images`);
-          var imgList = _.map($imgs, (img)=>{
-            return process(img);
-          });
-          allImages = _.union(allImages, imgList);
-          return imgList;
-      })
-      .catch(function (err) {
-          console.log("We’ve encountered an error: " + err);
-    });
+  // let cherioPromise = rp(options)
+  //     .then(function ($) {
+  //         let $imgs = $("img"),
+  //         imageCount = $imgs.length;
+  //
+  //         console.log(`There are ${imageCount} images`);
+  //         var imgList = _.map($imgs, (img)=>{
+  //           return process(img);
+  //         });
+  //         allImages = _.union(allImages, imgList);
+  //         return imgList;
+  //     })
+  //     .catch(function (err) {
+  //         console.log("We’ve encountered an error: " + err);
+  //   });
 
 
     let getImageUrlsPromise = getImageUrls(url)
@@ -115,7 +115,7 @@ function getImagesFromUrl(pullFrom) {
 
 
 
-    return Promise.all([getImageUrlsPromise, cherioPromise]).then(()=>{
+    return Promise.all([getImageUrlsPromise]).then(()=>{
         let un = _.uniq(allImages, function(item, key, src) {
             return item.src;
         });

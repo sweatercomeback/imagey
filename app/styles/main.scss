@@ -1,21 +1,29 @@
 @import "../components/bootstrap/dist/css/bootstrap.min.css";
-
+$fa-font-path:   "../components/font-awesome/fonts";
+@import "../components/font-awesome/scss/font-awesome.scss";
 body {
   font-size: 16px;
+  font-family: 'Roboto Condensed', sans-serif;
 }
+.container {
+  width: 90%;
+  margin: 0 auto;
 
-.image-list {
-  list-style:none;
-  margin: 0;
-  padding: 0;
-  clear:both;
-  overflow: auto;
-
-  li {
-    background-color: #ddd;
-    padding: 1em;
-    margin: 2em 1em;
-    float:left;
-    height: 150px;
+  .loading {
+    margin-top: 2em;
+    color: #666;
   }
+
+  .select-image {
+    margin-top: 33px;
+    text-align: center;
+    position: relative;
+    button {
+      width: 16em;
+    }
+  }
+
 }
+
+
+@import "carousel";

@@ -1,0 +1,21 @@
+.carousel-container {
+  margin-top: 2em;
+
+  .carousel-inner {
+    height: 350px;
+  }
+
+  .carousel-indicators {
+    bottom: -35px;
+  }
+
+  .item {
+    margin-top: 15%;
+    img {
+      max-height: 150px;
+      text-align:center;
+      margin: 0 auto;
+
+    }
+  }
+}

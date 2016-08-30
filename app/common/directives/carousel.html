@@ -1,12 +1,12 @@
 <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
   <!-- Indicators -->
   <ol class="carousel-indicators">
-    <li ng-repeat="link in links" data-target="#carousel-example-generic" data-slide-to="{{$index}}"></li>
+    <li data-ng-repeat="link in links" data-target="#carousel-example-generic" data-slide-to="{{$index}}"></li>
   </ol>
 
   <!-- Wrapper for slides -->
   <div class="carousel-inner" role="listbox">
-    <div class="item" ng-repeat="link in links">
+    <div class="item" data-ng-repeat="link in links">
       <img src="{{link.src}}" alt="{{link.src}}">
       <div class="carousel-caption">
         {{link.weight}}
