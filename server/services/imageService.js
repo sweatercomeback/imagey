@@ -68,9 +68,9 @@ function getImagesFromUrl(pullFrom) {
         console.log('ERROR', e);
       });
 
-      getImageUrlsPromise.then((allImages)=>{
+      return getImageUrlsPromise.then((allImages)=>{
           let unique = allImages;//_.uniqBy(allImages, "src");
-          var infoPromise = _.map(un, function(item) {
+          var infoPromise = _.map(unique, function(item) {
               return getDimensions(item.src).then((dim)=>{
                 item.dimensions = dim;
 
@@ -78,7 +78,7 @@ function getImagesFromUrl(pullFrom) {
             });
 
             return Promise.all(infoPromise).then(function() {
-              return _.chain(un)
+              return _.chain(unique)
                        .reject(isTrackingPixel)
                        .map(weight)
                        .sortBy(sortImagesByWeight)

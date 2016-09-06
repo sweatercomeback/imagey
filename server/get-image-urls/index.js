@@ -16,6 +16,7 @@ function getImageUrls(url, callback) {
 
     phantom.stdout.on('data', function(data) {
       data = "" + data;
+      console.log("data:", data)
       if (data.indexOf('Error') == 0) {
         error = data;
       }
