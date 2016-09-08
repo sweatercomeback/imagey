@@ -42,6 +42,20 @@ function sortImagesByWeight(img) {
   return img.weight;
 }
 
+function getAllImageUrls(url) {
+  getImageUrls(url)
+    .then((images) => {
+      let list = _.chain(images)
+        .map(processImagesFromUrl)
+        .uniqBy("src")
+        .value();
+        return list;
+
+    })
+    .catch((e) => {
+      console.log('ERROR', e);
+    });
+}
 
 
 function getImagesFromUrl(pullFrom) {
@@ -55,26 +69,31 @@ function getImagesFromUrl(pullFrom) {
   var allImages = [];
 
 
-    let getImageUrlsPromise = getImageUrls(url)
-      .then((images) => {
-        let list = _.chain(images)
-          .map(processImagesFromUrl)
-          .uniqBy("src")
-          .value();
-          return list;
-
-      })
-      .catch((e) => {
-        console.log('ERROR', e);
-      });
+    let getImageUrlsPromise = getAllImageUrls(url);
 
       return getImageUrlsPromise.then((allImages)=>{
           let unique = allImages;//_.uniqBy(allImages, "src");
           var infoPromise = _.map(unique, function(item) {
-              return getDimensions(item.src).then((dim)=>{
-                item.dimensions = dim;
-
-              });
+              let result;
+              console.log("probe started", item.src);
+              if(_.startsWith(item.src, "data:")) {
+                item.dimensions = {};
+                return Promise.resolve({});
+              }
+              try {
+                result = getDimensions(item.src).then((dim)=>{
+                  console.log("probe success", item.src);
+                  item.dimensions = dim;
+                }, ()=>{
+                  console.log("probe fail", item.src);
+                  item.dimensions = {};
+                });
+                } catch(err) {
+                  console.log("caught errr", item.src)
+                  item.dimensions = {};
+                  result = Promise.resolve({});
+                }
+                return result;
             });
 
             return Promise.all(infoPromise).then(function() {
