@@ -13,7 +13,7 @@ let {getFileName, getMimeType} = require('./common');
 
 function process(img) {
   let src = processImageSrc(img.attribs['src'], url),
-      alt = img.attribs['alt'],
+      alt = img.attribs['alt'] !== undefined ? img.attribs['alt'] : '',
       isLocal = isLocalImage(src, url),
       weight = 0;
 
@@ -43,7 +43,7 @@ function sortImagesByWeight(img) {
 }
 
 function getAllImageUrls(url) {
-  getImageUrls(url)
+  return getImageUrls(url)
     .then((images) => {
       let list = _.chain(images)
         .map(processImagesFromUrl)
@@ -57,39 +57,90 @@ function getAllImageUrls(url) {
     });
 }
 
+function ripImagesFromPage(url) {
+  var options = {
+     uri: url,
+     transform: function (body) {
+         return cheerio.load(body);
+     }
+ };
+
+ return rp(options)
+     .then(function ($) {
+         let $imgs = $("img"),
+         imageCount = $imgs.length;
+
+         console.log(`There are ${imageCount} images`);
+         var imgList = _.chain($imgs)
+                          .map((img)=>{
+                             return process(img);
+                           })
+                           .uniqBy("src")
+                           .value();
+        //  return _.map(imgList, (img)=>{
+        //    return weight(img);
+        //  });
+        return imgList;
+     })
+     .catch(function (err) {
+         console.log("We’ve encountered an error: " + err);
+   });
+}
+
+function mergeImages(allImages, newList) {
+  if(allImages.length === 0) {
+    return newList;
+  }
+  _.each(newList, (item)=>{
+    var existing = _.find(allImages, { 'src': item.src});
+    if(!existing) {
+      allImages.push(item);
+    } else {
+      if(!existing.alt) {
+        existing.alt = item.alt;
+      }
+    }
+  });
+  return allImages;
+}
 
 function getImagesFromUrl(pullFrom) {
   url = pullFrom;
-  let options = {
-      uri: url,
-      transform: function (body) {
-          return cheerio.load(body);
-      }
-  };
-  var allImages = [];
+    var allImages = [];
 
+    let getImageUrlsPromise = getAllImageUrls(url).then((list)=>{
+      console.log("getImageUrls", list);
+      allImages = mergeImages(allImages, list);
+    });
+    let ripImagesPromise = ripImagesFromPage(url).then((list)=>{
+      console.log("rip images returns", list)
+      allImages = mergeImages(allImages, list);
+    });
 
-    let getImageUrlsPromise = getAllImageUrls(url);
+      return Promise.all([getImageUrlsPromise, ripImagesPromise]).then(()=>{
+          let unique, takeCount = 50;
+          if(allImages.length > takeCount) {
+            unique = _.take(allImages, takeCount);
+          } else {
+            unique = allImages;
+          }
 
-      return getImageUrlsPromise.then((allImages)=>{
-          let unique = allImages;//_.uniqBy(allImages, "src");
+          console.log("getting dimensions");
           var infoPromise = _.map(unique, function(item) {
               let result;
-              console.log("probe started", item.src);
-              if(_.startsWith(item.src, "data:")) {
+
+              if(!item || !item.src || _.startsWith(item.src, "data:")) {
                 item.dimensions = {};
                 return Promise.resolve({});
               }
               try {
+
                 result = getDimensions(item.src).then((dim)=>{
-                  console.log("probe success", item.src);
                   item.dimensions = dim;
                 }, ()=>{
-                  console.log("probe fail", item.src);
                   item.dimensions = {};
                 });
                 } catch(err) {
-                  console.log("caught errr", item.src)
                   item.dimensions = {};
                   result = Promise.resolve({});
                 }
@@ -97,12 +148,15 @@ function getImagesFromUrl(pullFrom) {
             });
 
             return Promise.all(infoPromise).then(function() {
-              return _.chain(unique)
+              console.log("dimensions returned");
+              var values = _.chain(unique)
                        .reject(isTrackingPixel)
                        .map(weight)
                        .sortBy(sortImagesByWeight)
                        .reverse()
                        .value();
+              console.log("done")
+              return values;
             });
         });
 }

@@ -39,6 +39,10 @@ function getMimeType(str) {
 }
 
 function getDimensions(imgUrl) {
+  console.log("probing ", imgUrl);
+  if(_.startsWith(imgUrl, "//")) {
+    imgUrl = "http:"+imgUrl;
+  }
   return probe(imgUrl);
 }
 
