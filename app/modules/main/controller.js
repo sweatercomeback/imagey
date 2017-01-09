@@ -1,4 +1,5 @@
 'use strict';
+
 angular.module('app.main', [])
 .controller('ImageFormController', function ($scope, $http, $compile) {
     $scope.url = '';
@@ -8,9 +9,9 @@ angular.module('app.main', [])
     $scope.hasLoaded = false;
 
     function sanitizeUrl(url) {
-        if(url.startsWith('http')) {
+        if (url.startsWith('http')) {
           return url;
-        } else if(url.startsWith('//')) {
+        } else if (url.startsWith('//')) {
           return 'http:'+url;
         }
 
@@ -36,7 +37,7 @@ angular.module('app.main', [])
       $http({
         method: 'POST',
         url: '/images',
-        data: {url: $scope.url}
+        data: { url: $scope.url }
       }).then(function(res) {
           $scope.images = res.data;
           $scope.noResults = res.data.length === 0;

@@ -1,36 +1,35 @@
+const _ = require('lodash');
 
 function weight(img, index) {
-  console.log("weighting")
+  const weightedImg = _.clone(img);
+  weightedImg.weight = 0;
 
-  img.weight = 0;
-
-  //add weight if first
-  if(index === 0) {
-    img.weight += 1;
+  // add weight if first
+  if (index === 0) {
+    weightedImg.weight += 1;
   }
 
-  if(img.src.includes('logo')) {
-    img.weight += 2;
+  if (weightedImg.src.includes('logo')) {
+    weightedImg.weight += 2;
   }
 
-  //find appropriately sized images - in the goldilocks zone
-  if(img.dimensions.height > 175 && img.dimensions.height < 900) {
-    img.weight += 2;
+  // find appropriately sized images - in the goldilocks zone
+  if (weightedImg.dimensions.height > 175 && weightedImg.dimensions.height < 900) {
+    weightedImg.weight += 2;
   } else {
-    img.weight = img.weight - 2;
+    weightedImg.weight -= 2;
   }
 
-  if(img.alt.length > 1) {
-    img.weight += 1;
+  if (weightedImg.alt.length > 1) {
+    weightedImg.weight += 1;
   }
-  if(img.alt.length > 25) {
-    img.weight += 1;
+  if (img.alt.length > 25) {
+    weightedImg.weight += 1;
   }
 
-  console.log("end weighting", img)
-  return img;
+  return weightedImg;
 }
 
 module.exports = {
-  weight: weight
-}
+  weight,
+};

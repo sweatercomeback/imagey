@@ -1,40 +1,44 @@
-function isLocalImage(src, url){
+const _ = require('lodash');
+
+function isLocalImage(src, url) {
   return src.includes(url.replace('https://', '').replace('http://', ''));
 }
 
 function isTrackingPixel(img) {
-    return img.dimensions.height === 1;
+  return img.dimensions.height === 1;
 }
 
 function processImageSrc(src, url) {
-  if(!src) {
+  let cleanUrl = url;
+  if (!src) {
     return '';
   }
-  if(src.startsWith('http') || src.startsWith('//')) {
+  if (src.startsWith('http') || src.startsWith('//')) {
     return src;
   }
-  if(!url.endsWith('/') && !src.startsWith('/')) {
-    url = `${url}/`;
+  if (!cleanUrl.endsWith('/') && !src.startsWith('/')) {
+    cleanUrl = `${cleanUrl}/`;
   }
-  return `${url}${src}`;
+  return `${cleanUrl}${src}`;
 }
 
 function weight(img, index) {
-  //add weight if first
-  if(index === 0) {
-    img.weight += 1;
+  const weightedImg = _.clone(img);
+  // add weight if first
+  if (index === 0) {
+    weightedImg.weight += 1;
   }
 
-  if(img.src.includes('logo')) {
-    img.weight += 5;
+  if (weightedImg.src.includes('logo')) {
+    weightedImg.weight += 5;
   }
 
-  return img;
+  return weightedImg;
 }
 
 module.exports = {
-  isLocalImage: isLocalImage,
-  isTrackingPixel: isTrackingPixel,
-  processImageSrc: processImageSrc,
-  weight: weight
-}
+  isLocalImage,
+  isTrackingPixel,
+  processImageSrc,
+  weight,
+};

@@ -1,0 +1,35 @@
+{
+  "env": {
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "plugins": [
+  ],
+  "extends": [
+    "airbnb"
+  ],
+  "settings": {
+  },
+  "rules": {
+    "import/no-extraneous-dependencies": 0,
+    "import/extensions": 0,
+    "arrow-body-style": [
+      "error",
+      "always"
+    ],
+    "object-shorthand": [
+      "error",
+      "always",
+      {
+        "avoidQuotes": false
+      }
+    ],
+    "no-underscore-dangle": 0
+  }
+}
